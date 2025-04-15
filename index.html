@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waktu Solat Berdasarkan Lokasi</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+    h1 { color: #2c3e50; }
+    ul { padding-left: 0; list-style: none; }
+    li { padding: 5px 0; }
+  </style>
+</head>
+<body>
+  <h1>Waktu Solat Berdasarkan Lokasi Anda</h1>
+  <p id="lokasi">Mengesan lokasi...</p>
+  <ul id="waktu-solat"></ul>
+
+  <script>
+    // Dapatkan lokasi pengguna
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(showPrayerTimes, showError);
+    } else {
+      document.getElementById("lokasi").textContent = "Geolocation tidak disokong.";
+    }
+
+    function showPrayerTimes(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      document.getElementById("lokasi").textContent = `Lokasi: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+
+      const url = `https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=9`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          const times = data.data.timings;
+          const list = document.getElementById('waktu-solat');
+          list.innerHTML = "";
+
+          for (const [name, time] of Object.entries(times)) {
+            const li = document.createElement('li');
+            li.textContent = `${name}: ${time}`;
+            list.appendChild(li);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching prayer times:', error);
+        });
+    }
+
+    function showError(error) {
+      const lokasi = document.getElementById("lokasi");
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          lokasi.textContent = "Pengguna menolak akses lokasi.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          lokasi.textContent = "Maklumat lokasi tidak tersedia.";
+          break;
+        case error.TIMEOUT:
+          lokasi.textContent = "Permintaan lokasi tamat masa.";
+          break;
+        default:
+          lokasi.textContent = "Ralat tidak diketahui.";
+          break;
+      }
+    }
+  </script>
+</body>
+</html>

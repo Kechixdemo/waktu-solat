@@ -2,10 +2,14 @@
 <html lang="ms">
 <head>
   <meta charset="UTF-8">
-  <title>Waktu Solat Ikut Daerah</title>
+  <title>Waktu Solat Malaysia</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
@@ -14,9 +18,15 @@
       color: white;
       min-height: 100vh;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    h1 { font-size: 2rem; margin-bottom: 10px; }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
 
     select {
       padding: 10px;
@@ -24,6 +34,8 @@
       border-radius: 8px;
       font-size: 1rem;
       margin-bottom: 20px;
+      width: 100%;
+      max-width: 400px;
     }
 
     ul {
@@ -31,16 +43,21 @@
       padding: 0;
       margin: 0 auto;
       max-width: 300px;
+      width: 100%;
     }
 
     li {
       font-size: 1.1rem;
       margin: 6px 0;
+      background: rgba(255,255,255,0.15);
+      padding: 8px 12px;
+      border-radius: 8px;
     }
 
     .highlight {
       color: #ffd700;
       font-weight: bold;
+      background: rgba(255, 255, 255, 0.25);
     }
 
     #countdown {
@@ -49,25 +66,56 @@
       background: rgba(255,255,255,0.2);
       padding: 10px 15px;
       border-radius: 12px;
+      max-width: 90%;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.6rem;
+      }
+
+      select {
+        font-size: 0.95rem;
+      }
+
+      li {
+        font-size: 1rem;
+      }
+
+      #countdown {
+        font-size: 1.2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Waktu Solat Mengikut Daerah</h1>
+  <h1>Waktu Solat Malaysia</h1>
 
-  <label for="daerah">Pilih Daerah:</label>
-  <br>
   <select id="daerah">
+    <option disabled selected>Sila pilih daerah</option>
+    <option value="Alor Setar">Alor Setar</option>
+    <option value="George Town">George Town</option>
+    <option value="Ipoh">Ipoh</option>
     <option value="Shah Alam">Shah Alam</option>
-    <option value="Kuala Terengganu">Kuala Terengganu</option>
+    <option value="Kuala Lumpur">Kuala Lumpur</option>
+    <option value="Putrajaya">Putrajaya</option>
+    <option value="Seremban">Seremban</option>
+    <option value="Melaka">Melaka</option>
     <option value="Johor Bahru">Johor Bahru</option>
-    <option value="Kangar">Kangar</option>
+    <option value="Kuantan">Kuantan</option>
     <option value="Kota Bharu">Kota Bharu</option>
+    <option value="Kuala Terengganu">Kuala Terengganu</option>
+    <option value="Kangar">Kangar</option>
+    <option value="Kota Kinabalu">Kota Kinabalu</option>
     <option value="Kuching">Kuching</option>
+    <option value="Labuan">Labuan</option>
+    <option value="Miri">Miri</option>
+    <option value="Sandakan">Sandakan</option>
+    <option value="Tawau">Tawau</option>
   </select>
 
   <ul id="waktu-solat"></ul>
-  <div id="countdown">Sila pilih daerah.</div>
+  <div id="countdown">Sila pilih daerah untuk lihat waktu solat.</div>
 
   <script>
     const daerahSelect = document.getElementById("daerah");
@@ -82,7 +130,7 @@
 
     function getPrayerTimes(city) {
       clearInterval(countdownInterval);
-      listEl.innerHTML = "Memuat...";
+      listEl.innerHTML = "Memuat waktu solat...";
       countdownEl.textContent = "Sabar jap...";
 
       fetch(`https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=Malaysia&method=9`)
